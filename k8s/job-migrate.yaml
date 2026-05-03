@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: soccer-news-migrate
+  namespace: mcp-soccer-news
+  labels:
+    app: mcp-soccer-news
+    job: migrate
+spec:
+  template:
+    metadata:
+      labels:
+        app: mcp-soccer-news
+        job: migrate
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: migrate
+        image: image-registry.openshift-image-registry.svc:5000/mcp-soccer-news/mcp-soccer-news:latest
+        command: ["npm", "run", "migrate"]
+        envFrom:
+        - secretRef:
+            name: mcp-soccer-news-env
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+  backoffLimit: 3
